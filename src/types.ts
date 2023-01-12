@@ -10,3 +10,14 @@ export type CheckIn = {
   obstacles: string;
   tokenAmountClaimed: string;
 };
+
+export type CorruptMetadata = {
+  id: string;
+  error: boolean;
+  secondsWorked: string;
+  tokenAmountClaimed: string;
+  timeStamp: string;
+  memberAddress: string;
+  description: string;
+  type: 'Corrupt Metadata';
+};
