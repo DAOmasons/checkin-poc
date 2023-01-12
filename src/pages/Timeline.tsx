@@ -20,6 +20,7 @@ import {
 } from '@daohaus/utils';
 import React from 'react';
 import styled from 'styled-components';
+import { MemberAvatar } from '../components/MemberAvatar';
 import { useCheckInLogs } from '../hooks/useCheckInLogs';
 import { TARGET_DAO } from '../targetDAO';
 import { CheckIn, CorruptMetadata } from '../types';
@@ -57,6 +58,12 @@ export const Timeline = () => {
 const ClaimCard = styled(Card)`
   width: 100%;
   margin-bottom: 2rem;
+  .member-box {
+    display: flex;
+  }
+  .member-avatar {
+    margin-right: 0.5rem;
+  }
 `;
 
 const CorruptCard = styled(ClaimCard)`
@@ -91,16 +98,23 @@ const Log = ({
           {formatShortDateTimeFromSeconds(timeStamp)}
         </TintSecondary>
       </ParSm>
-      <ParLg className="mb-md">
-        {truncateAddress(memberAddress)} claimed{' '}
-        {formatValueTo({
-          value: fromWei(tokenAmountClaimed),
-          decimals: 2,
-          format: 'numberShort',
-        })}{' '}
-        shares for {formatPeriods(secondsWorked)} worked
-      </ParLg>
-      <Button onClick={toggleShowMore} variant="link" className="mb-md">
+      <div className="member-box">
+        <MemberAvatar address={memberAddress} className="member-avatar" />
+        <ParMd className="mb-md">
+          claimed{' '}
+          {formatValueTo({
+            value: fromWei(tokenAmountClaimed),
+            decimals: 2,
+            format: 'numberShort',
+          })}{' '}
+          shares for {formatPeriods(secondsWorked)} worked
+        </ParMd>
+      </div>
+      <Button
+        onClick={toggleShowMore}
+        variant="link"
+        className={showMore ? 'mb-md' : undefined}
+      >
         {showMore ? 'Hide Details' : 'Show Details'}
       </Button>
       {showMore && (
@@ -148,16 +162,23 @@ const MetaDataCorruptLog = ({
           {formatShortDateTimeFromSeconds(timeStamp)}
         </TintError>
       </ParSm>
-      <ParLg className="mb-md">
-        {truncateAddress(memberAddress)} claimed{' '}
-        {formatValueTo({
-          value: fromWei(tokenAmountClaimed),
-          decimals: 2,
-          format: 'numberShort',
-        })}{' '}
-        shares for {formatPeriods(secondsWorked)} worked
-      </ParLg>
-      <Button onClick={toggleShowMore} variant="link" className="mb-md">
+      <div className="member-box">
+        <MemberAvatar address={memberAddress} className="member-avatar" />
+        <ParMd className="mb-md">
+          claimed{' '}
+          {formatValueTo({
+            value: fromWei(tokenAmountClaimed),
+            decimals: 2,
+            format: 'numberShort',
+          })}{' '}
+          shares for {formatPeriods(secondsWorked)} worked
+        </ParMd>
+      </div>
+      <Button
+        onClick={toggleShowMore}
+        variant="link"
+        className={showMore ? 'mb-md' : undefined}
+      >
         {showMore ? 'Hide Details' : 'Show Details'}
       </Button>
       {showMore && (
