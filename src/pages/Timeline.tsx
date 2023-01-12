@@ -7,6 +7,7 @@ import {
   ParXs,
   SingleColumnLayout,
   Spinner,
+  Theme,
   TintSecondary,
 } from '@daohaus/ui';
 import {
@@ -20,7 +21,9 @@ import React from 'react';
 import styled from 'styled-components';
 import { useCheckInLogs } from '../hooks/useCheckInLogs';
 import { TARGET_DAO } from '../targetDAO';
-import { CheckIn } from '../types';
+import { CheckIn, CorruptMetadata } from '../types';
+
+const isCorruptMetadata = (log: any): log is CorruptMetadata => log?.error;
 
 export const Timeline = () => {
   const { logs, isLoading, failureCount } = useCheckInLogs({
@@ -41,7 +44,10 @@ export const Timeline = () => {
   return (
     <SingleColumnLayout title="Work Timeline">
       {logs?.map((log) => {
-        return <Log key={`${log.id}`} {...log} />;
+        if (isCorruptMetadata(log)) {
+          return <MetaDataCorruptLog key={log.id} {...log} />;
+        }
+        return <Log key={log.id} {...log} />;
       })}
     </SingleColumnLayout>
   );
@@ -50,6 +56,15 @@ export const Timeline = () => {
 const ClaimCard = styled(Card)`
   width: 100%;
   margin-bottom: 2rem;
+`;
+
+const CorruptCard = styled(ClaimCard)`
+  background-color: ${({ theme }: { theme: Theme }) => theme.warning.step3};
+  border-color: ${({ theme }: { theme: Theme }) => theme.warning.step4};
+`;
+
+const TintError = styled.span`
+  color: ${({ theme }: { theme: Theme }) => theme.warning.step11};
 `;
 
 const Log = ({
@@ -108,5 +123,51 @@ const Log = ({
         </>
       )}
     </ClaimCard>
+  );
+};
+
+const MetaDataCorruptLog = ({
+  memberAddress,
+  timeStamp,
+  secondsWorked,
+  tokenAmountClaimed,
+  description,
+  type,
+}: CorruptMetadata) => {
+  const [showMore, setShowMore] = React.useState(false);
+
+  const toggleShowMore = () => {
+    setShowMore(!showMore);
+  };
+  return (
+    <CorruptCard>
+      <ParSm className="mb-sm">
+        <TintError>{formatShortDateTimeFromSeconds(timeStamp)}</TintError>
+      </ParSm>
+      <ParLg className="mb-md">
+        {truncateAddress(memberAddress)} claimed{' '}
+        {formatValueTo({
+          value: fromWei(tokenAmountClaimed),
+          decimals: 2,
+          format: 'numberShort',
+        })}{' '}
+        shares for {formatPeriods(secondsWorked)} worked
+      </ParLg>
+      <Button onClick={toggleShowMore} variant="link" className="mb-md">
+        {showMore ? 'Hide Details' : 'Show Details'}
+      </Button>
+      {showMore && (
+        <>
+          <ParXs className="uppercase mb-xs">Error Type:</ParXs>
+          <ParMd className="mb-md">
+            <TintError>{type}</TintError>
+          </ParMd>
+          <ParXs className="uppercase mb-xs">Error Description:</ParXs>
+          <ParMd className="mb-md">
+            <TintError>{description}</TintError>
+          </ParMd>
+        </>
+      )}
+    </CorruptCard>
   );
 };
