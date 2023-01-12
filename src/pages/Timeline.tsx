@@ -9,6 +9,7 @@ import {
   Spinner,
   Theme,
   TintSecondary,
+  Tooltip,
 } from '@daohaus/ui';
 import {
   formatPeriods,
@@ -59,7 +60,7 @@ const ClaimCard = styled(Card)`
 `;
 
 const CorruptCard = styled(ClaimCard)`
-  background-color: ${({ theme }: { theme: Theme }) => theme.warning.step3};
+  background-color: ${({ theme }: { theme: Theme }) => theme.warning.step2};
   border-color: ${({ theme }: { theme: Theme }) => theme.warning.step4};
 `;
 
@@ -142,7 +143,10 @@ const MetaDataCorruptLog = ({
   return (
     <CorruptCard>
       <ParSm className="mb-sm">
-        <TintError>{formatShortDateTimeFromSeconds(timeStamp)}</TintError>
+        <TintError>
+          <Tooltip content={`${type}: ${description}`} />{' '}
+          {formatShortDateTimeFromSeconds(timeStamp)}
+        </TintError>
       </ParSm>
       <ParLg className="mb-md">
         {truncateAddress(memberAddress)} claimed{' '}
